@@ -21,6 +21,7 @@ TEMPLATES = {
     "semilleros": {"name": "mesnajes_de_asistencia", "language": "es_CO"},
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
     "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"}
+    "artes_al_aula": {"name": "artes_al_aula", "language": "es_CO"},
 }
 
 def solo_digitos(s):
@@ -374,6 +375,7 @@ HTML = """<!DOCTYPE html>
           <option value="semilleros">Semilleros Artísticos — mesnajes_de_asistencia (es_CO)</option>
           <option value="orquestas">Orquestas en Ruta — mensajes_asistencia_orquestas_en_ruta (en)</option>
           <option value="mensajes_gda">Mensajes Masivos -GdA(es_CO)</option>
+          <option value="artes_al_aula">Artes al Aula — Formularios (es_CO)</option>
         </select>
       </div>
 
