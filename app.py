@@ -20,6 +20,7 @@ WA_API_VERSION = "v20.0"
 TEMPLATES = {
     "semilleros": {"name": "mesnajes_de_asistencia", "language": "es_CO"},
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
+    "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"}
 }
 
 def solo_digitos(s):
@@ -372,6 +373,7 @@ HTML = """<!DOCTYPE html>
         <select id="plantilla">
           <option value="semilleros">Semilleros Artísticos — mesnajes_de_asistencia (es_CO)</option>
           <option value="orquestas">Orquestas en Ruta — mensajes_asistencia_orquestas_en_ruta (en)</option>
+          <option value="mensajes_gda">Mensajes Masivos -GdA(es_CO)</option>
         </select>
       </div>
 
