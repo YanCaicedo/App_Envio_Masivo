@@ -22,6 +22,7 @@ TEMPLATES = {
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
     "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"},
     "artes_al_aula": {"name": "artes_al_aula", "language": "es_CO"},
+    "yawa_agenda_nueva": {"name": "yawa_agenda_nueva", "language": "es_CO"},
 }
 
 def solo_digitos(s):
@@ -376,6 +377,7 @@ HTML = """<!DOCTYPE html>
           <option value="orquestas">Orquestas en Ruta — mensajes_asistencia_orquestas_en_ruta (en)</option>
           <option value="mensajes_gda">Mensajes Masivos -GdA(es_CO)</option>
           <option value="artes_al_aula">Artes al Aula — Formularios (es_CO)</option>
+          <option value="yawa_agenda_nueva">YAWA Agenda Nueva — yawa_agenda_nueva (es_CO)</option>
         </select>
       </div>
 
