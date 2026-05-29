@@ -22,7 +22,11 @@ TEMPLATES = {
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
     "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"},
     "artes_al_aula": {"name": "artes_al_aula", "language": "es_CO"},
-    "yawa_agenda_nueva": {"name": "yawa_agenda_nueva", "language": "es_CO"},
+    "yawa_agenda_nueva": {
+    "name": "yawa_agenda_nueva",
+    "language": "es_CO",
+    "header_image": "https://raw.githubusercontent.com/YanCaicedo/App_Envio_Masivo/6d2ada826e0204fc3d5981b18c9223d3561d5912/Imagenes/Agenda_Yawa_Junio.jpg"
+},
 }
 
 def solo_digitos(s):
@@ -64,14 +68,25 @@ def cargar_contactos_csv(content):
             out.append(c)
     return out, invalidos, None
 
-def enviar_mensaje(token, phone_id, numero, template_name, template_lang):
+def enviar_mensaje(token, phone_id, numero, template_name, template_lang, header_image=None):
     url = f"https://graph.facebook.com/{WA_API_VERSION}/{phone_id}/messages"
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    components = []
+    if header_image:
+        components.append({
+            "type": "header",
+            "parameters": [{"type": "image", "image": {"link": header_image}}]
+        })
+
     payload = {
         "messaging_product": "whatsapp",
         "to": f"57{numero}",
         "type": "template",
-        "template": {"name": template_name, "language": {"code": template_lang}}
+        "template": {
+            "name": template_name,
+            "language": {"code": template_lang},
+            "components": components
+        }
     }
     try:
         resp = requests.post(url, headers=headers, json=payload, timeout=15)
@@ -83,7 +98,7 @@ def enviar_mensaje(token, phone_id, numero, template_name, template_lang):
         return False, str(e)
 
 def run_job(job_id, token, phone_id, contactos, template_name, template_lang,
-            pausa_msg, tam_tanda, pausa_tanda):
+            pausa_msg, tam_tanda, pausa_tanda, header_image=None):
     job = jobs[job_id]
     job["estado"] = "enviando"
     total = len(contactos)
@@ -95,7 +110,7 @@ def run_job(job_id, token, phone_id, contactos, template_name, template_lang,
 
         numero = c["numero"]
         nombre = c["nombre"] or numero
-        ok, error = enviar_mensaje(token, phone_id, numero, template_name, template_lang)
+        ok, error = enviar_mensaje(token, phone_id, numero, template_name, template_lang, header_image)
 
         entry = {"i": i, "total": total, "nombre": nombre, "numero": numero,
                  "ok": ok, "error": error}
@@ -143,6 +158,7 @@ def iniciar():
         return jsonify({"error": "No hay contactos válidos en el CSV"}), 400
 
     tmpl = TEMPLATES.get(plantilla, TEMPLATES["semilleros"])
+    header_image = tmpl.get("header_image", None)
     job_id = str(uuid.uuid4())
     jobs[job_id] = {
         "estado": "iniciando", "progreso": 0, "total": len(contactos),
@@ -153,7 +169,7 @@ def iniciar():
     t = threading.Thread(target=run_job, args=(
         job_id, token, phone_id, contactos,
         tmpl["name"], tmpl["language"],
-        pausa_msg, tam_tanda, pausa_tanda
+        pausa_msg, tam_tanda, pausa_tanda, header_image
     ), daemon=True)
     t.start()
 
