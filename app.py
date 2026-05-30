@@ -29,6 +29,15 @@ TEMPLATES = {
 },
 }
 
+
+TEMPLATE_LABELS = {
+    "semilleros": "Semilleros Artísticos",
+    "orquestas": "Orquestas en Ruta",
+    "mensajes_gda": "Mensajes Masivos GdA",
+    "artes_al_aula": "Artes al Aula",
+    "yawa_agenda_nueva": "YAWA Agenda Nueva",
+}
+
 def solo_digitos(s):
     return "".join(ch for ch in str(s) if ch.isdigit())
 
@@ -159,11 +168,12 @@ def iniciar():
 
     tmpl = TEMPLATES.get(plantilla, TEMPLATES["semilleros"])
     header_image = tmpl.get("header_image", None)
+    plantilla_label = TEMPLATE_LABELS.get(plantilla, plantilla)
     job_id = str(uuid.uuid4())
     jobs[job_id] = {
         "estado": "iniciando", "progreso": 0, "total": len(contactos),
         "enviados": 0, "fallidos": [], "log": [], "invalidos": invalidos,
-        "cancelar": False
+        "cancelar": False, "plantilla_label": plantilla_label
     }
 
     t = threading.Thread(target=run_job, args=(
@@ -188,6 +198,7 @@ def estado(job_id):
         "enviados": job["enviados"],
         "fallidos": job["fallidos"],
         "log": job["log"][-50:],
+        "plantilla_label": job.get("plantilla_label", ""),
     })
 
 @app.route("/api/cancelar/<job_id>", methods=["POST"])
@@ -359,9 +370,9 @@ HTML = """<!DOCTYPE html>
 <div class="container">
 
   <header>
-    <div class="badge">Gestión de las Artes · Cali</div>
+    <div class="badge">Gestión de las Artes · Secretaría de Cultura de Cali</div>
     <h1>Envío Masivo<br><span>WhatsApp</span></h1>
-    <p class="subtitle">// API v20.0 · Business Cloud API · Plantillas aprobadas</p>
+    <p class="subtitle">// </p>
   </header>
 
   <!-- FORMULARIO -->
@@ -437,6 +448,9 @@ HTML = """<!DOCTYPE html>
       <div class="prog-header">
         <div class="card-title" style="margin:0">Estado del envío</div>
         <span class="estado-badge estado-iniciando pulse" id="estado-badge">Iniciando</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text2);margin-bottom:1rem;">
+        Plantilla: <span id="plantilla-activa-label" style="color:var(--accent);">—</span>
       </div>
 
       <div class="stats">
@@ -552,6 +566,9 @@ async function actualizarEstado() {
     document.getElementById('prog-nums').textContent = d.progreso + ' / ' + d.total;
     document.getElementById('stat-ok').textContent = d.enviados;
     document.getElementById('stat-fail').textContent = d.fallidos.length;
+    if (d.plantilla_label) {
+      document.getElementById('plantilla-activa-label').textContent = d.plantilla_label;
+    }
 
     // Nuevos logs
     const newLogs = d.log.slice(logCount);
@@ -606,6 +623,7 @@ function nuevoEnvio() {
   document.getElementById('progreso-section').style.display = 'none';
   document.getElementById('file-name').textContent = '';
   document.getElementById('csv-file').value = '';
+  document.getElementById('plantilla-activa-label').textContent = '—';
 }
 
 function addLog(type, text) {
