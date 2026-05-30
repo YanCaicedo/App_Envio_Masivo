@@ -8,6 +8,7 @@ import requests
 import threading
 import io
 import uuid
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -18,7 +19,7 @@ jobs = {}
 WA_API_VERSION = "v20.0"
 
 TEMPLATES = {
-    "semilleros": {"name": "mesnajes_de_asistencia", "language": "es_CO"},
+    "semilleros": {"name": "mensajes_de_asistencia", "language": "es_CO"},
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
     "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"},
     "artes_al_aula": {"name": "artes_al_aula", "language": "es_CO"},
@@ -146,7 +147,7 @@ def index():
 
 @app.route("/api/iniciar", methods=["POST"])
 def iniciar():
-    token     = request.form.get("token", "").strip()
+    token     = request.form.get("token", "").strip() or os.environ.get("WA_TOKEN", "")
     phone_id  = request.form.get("phone_id", "1084767568053371").strip()
     plantilla = request.form.get("plantilla", "semilleros")
     pausa_msg = int(request.form.get("pausa_msg", 3))
@@ -381,13 +382,13 @@ HTML = """<!DOCTYPE html>
     <div class="card">
       <div class="card-title">01 · Autenticación</div>
 
-      <div class="warn-box">
-        ⚠ El token vence cada 24h. Genéralo en developers.facebook.com → Envio_Masivo → Configuración de la API
+      <div class="warn-box" id="token-warn">
+        ⚠ Token permanente activo — vence en <span id="dias-restantes" style="font-weight:bold;"></span> días
       </div>
 
       <div class="field">
         <label>Token de acceso *</label>
-        <input type="password" id="token" placeholder="EAAm..." autocomplete="off">
+        <input type="password" id="token" placeholder="Dejar vacío para usar token permanente" autocomplete="off">
       </div>
       <div class="field">
         <label>Phone Number ID</label>
@@ -518,7 +519,7 @@ async function iniciarEnvio() {
   const tamTanda = document.getElementById('tam_tanda').value;
   const pausaTanda = document.getElementById('pausa_tanda').value;
 
-  if (!token) { alert('Ingresa el token de acceso.'); return; }
+  //#if (!token) { alert('Ingresa el token de acceso.'); return; } -al usar token permanente, no es obligatorio ingresarlo manualmente (descomentar si cambia la logica en backend)
   if (!csvFile) { alert('Selecciona un archivo CSV.'); return; }
 
   const btn = document.getElementById('btn-enviar');
@@ -634,6 +635,28 @@ function addLog(type, text) {
   wrap.appendChild(d);
   wrap.scrollTop = wrap.scrollHeight;
 }
+
+// Calcular días restantes para el token permanente
+(function() {
+  const vencimiento = new Date('2026-07-27');
+  const hoy = new Date();
+  const diff = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+  const span = document.getElementById('dias-restantes');
+  const warn = document.getElementById('token-warn');
+  if (diff <= 0) {
+    warn.style.background = 'rgba(255,71,87,0.15)';
+    warn.style.borderColor = 'rgba(255,71,87,0.5)';
+    warn.style.color = '#FF4757';
+    span.textContent = '0 — TOKEN VENCIDO';
+  } else if (diff <= 10) {
+    warn.style.background = 'rgba(255,71,87,0.1)';
+    warn.style.borderColor = 'rgba(255,71,87,0.3)';
+    warn.style.color = '#FF4757';
+    span.textContent = diff;
+  } else {
+    span.textContent = diff;
+  }
+})();
 </script>
 </body>
 </html>"""
