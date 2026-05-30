@@ -148,7 +148,7 @@ def index():
 @app.route("/api/iniciar", methods=["POST"])
 def iniciar():
     token     = request.form.get("token", "").strip() or os.environ.get("WA_TOKEN", "")
-    phone_id  = request.form.get("phone_id", "1084767568053371").strip()
+    phone_id  = "1084767568053371"
     plantilla = request.form.get("plantilla", "semilleros")
     pausa_msg = int(request.form.get("pausa_msg", 3))
     tam_tanda = int(request.form.get("tam_tanda", 15))
@@ -386,13 +386,14 @@ HTML = """<!DOCTYPE html>
         ⚠ Token permanente activo — vence en <span id="dias-restantes" style="font-weight:bold;"></span> días
       </div>
 
-      <div class="field">
-        <label>Token de acceso *</label>
-        <input type="password" id="token" placeholder="Dejar vacío para usar token permanente" autocomplete="off">
+      <div style="margin-top:0.75rem;">
+        <span onclick="toggleTokenAvanzado()" style="font-family:var(--mono);font-size:0.75rem;color:var(--text2);cursor:pointer;" id="toggle-label">▶ Usar token diferente</span>
       </div>
-      <div class="field">
-        <label>Phone Number ID</label>
-        <input type="text" id="phone_id" value="1084767568053371">
+      <div id="token-avanzado" style="display:none;margin-top:1rem;">
+        <div class="field">
+          <label>Token de acceso</label>
+          <input type="password" id="token" placeholder="Dejar vacío para usar token permanente" autocomplete="off">
+        </div>
       </div>
     </div>
 
@@ -657,6 +658,18 @@ function addLog(type, text) {
     span.textContent = diff;
   }
 })();
+
+function toggleTokenAvanzado() {
+  const div = document.getElementById('token-avanzado');
+  const label = document.getElementById('toggle-label');
+  if (div.style.display === 'none') {
+    div.style.display = 'block';
+    label.textContent = '▼ Usar token diferente';
+  } else {
+    div.style.display = 'none';
+    label.textContent = '▶ Usar token diferente';
+  }
+}
 </script>
 </body>
 </html>"""
