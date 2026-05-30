@@ -512,7 +512,8 @@ function updateFileName() {
 }
 
 async function iniciarEnvio() {
-  const token = document.getElementById('token').value.trim();
+  const tokenEl = document.getElementById('token');
+  const token = tokenEl ? tokenEl.value.trim() : '';
   const phoneId = document.getElementById('phone_id').value.trim();
   const plantilla = document.getElementById('plantilla').value;
   const csvFile = document.getElementById('csv-file').files[0];
