@@ -190,14 +190,15 @@ def estado(job_id):
     job = jobs.get(job_id)
     if not job:
         return jsonify({"error": "Job no encontrado"}), 404
-    # Solo devolver los últimos 50 logs para no saturar
+    offset = int(request.args.get("offset", 0))
     return jsonify({
         "estado": job["estado"],
         "progreso": job["progreso"],
         "total": job["total"],
         "enviados": job["enviados"],
         "fallidos": job["fallidos"],
-        "log": job["log"][-50:],
+        "log": job["log"][ offset:],
+        "log_total": len(job["log"]),
         "plantilla_label": job.get("plantilla_label", ""),
     })
 
@@ -370,9 +371,9 @@ HTML = """<!DOCTYPE html>
 <div class="container">
 
   <header>
-    <div class="badge">Gestión de las Artes · Secretaría de Cultura de Cali</div>
-    <h1>Envío Masivo<br><span>WhatsApp</span></h1>
-    <p class="subtitle">// </p>
+    <div class="badge">Gestión de las Artes</div>
+    <h1>App Envío<br><span>Masivo</span></h1>
+    <p class="subtitle">// Subsecretaría de Artes · Secretaría de Cultura de Cali</p>
   </header>
 
   <!-- FORMULARIO -->
@@ -490,7 +491,7 @@ HTML = """<!DOCTYPE html>
 <script>
 let jobId = null;
 let pollInterval = null;
-let logCount = 0;
+let logOffset = 0;
 
 // Drag & drop
 const dz = document.getElementById('drop-zone');
@@ -558,7 +559,7 @@ async function iniciarEnvio() {
 async function actualizarEstado() {
   if (!jobId) return;
   try {
-    const res = await fetch('/api/estado/' + jobId);
+    const res = await fetch('/api/estado/' + jobId + '?offset=' + logOffset);
     const d = await res.json();
 
     const pct = d.total > 0 ? (d.progreso / d.total * 100) : 0;
@@ -571,8 +572,7 @@ async function actualizarEstado() {
     }
 
     // Nuevos logs
-    const newLogs = d.log.slice(logCount);
-    newLogs.forEach(l => {
+    d.log.forEach(l => {
       if (l.pausa) {
         addLog('pausa', `⏸ Pausa de ${l.minutos} min entre tandas...`);
       } else {
@@ -584,7 +584,7 @@ async function actualizarEstado() {
         addLog(cls, txt);
       }
     });
-    logCount = d.log.length;
+    logOffset = d.log_total;
 
     // Estado badge
     const badge = document.getElementById('estado-badge');
@@ -612,7 +612,7 @@ async function cancelarEnvio() {
 
 function nuevoEnvio() {
   clearInterval(pollInterval);
-  jobId = null; logCount = 0;
+  jobId = null; logOffset = 0;
   document.getElementById('log-wrap').innerHTML = '';
   document.getElementById('prog-bar').style.width = '0%';
   document.getElementById('btn-enviar').disabled = false;
