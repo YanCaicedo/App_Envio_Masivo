@@ -540,7 +540,7 @@ async function iniciarEnvio() {
   try {
     const res = await fetch('/api/iniciar', { method: 'POST', body: fd });
     const data = await res.json();
-    if (data.error) { alert('Error: ' + data.error); btn.disabled = false; btn.innerHTML = '<span>▶</span> Iniciar envío masivo'; return; }
+    if (data.error) { alert('Error: ' + data.error); btn.disabled = false; btn.innerHTML = '<span>▶</span> Iniciar Envío'; return; }
 
     jobId = data.job_id;
     document.getElementById('stat-total').textContent = data.total;
