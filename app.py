@@ -441,7 +441,7 @@ HTML = """<!DOCTYPE html>
     </div>
 
     <button class="btn btn-primary" id="btn-enviar" onclick="iniciarEnvio()">
-      <span>▶</span> Iniciar envío masivo
+      <span>▶</span> Iniciar Envío
     </button>
   </div>
 
@@ -555,7 +555,7 @@ async function iniciarEnvio() {
   } catch(e) {
     alert('Error de conexión: ' + e.message);
     btn.disabled = false;
-    btn.innerHTML = '<span>▶</span> Iniciar envío masivo';
+    btn.innerHTML = '<span>▶</span> Iniciar Envío';
   }
 }
 
@@ -619,7 +619,7 @@ function nuevoEnvio() {
   document.getElementById('log-wrap').innerHTML = '';
   document.getElementById('prog-bar').style.width = '0%';
   document.getElementById('btn-enviar').disabled = false;
-  document.getElementById('btn-enviar').innerHTML = '<span>▶</span> Iniciar envío masivo';
+  document.getElementById('btn-enviar').innerHTML = '<span>▶</span> Iniciar Envío';
   document.getElementById('btn-cancelar').style.display = 'inline-flex';
   document.getElementById('btn-nuevo').style.display = 'none';
   document.getElementById('form-section').style.display = 'block';
