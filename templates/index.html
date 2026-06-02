@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Envío Masivo WhatsApp — Gestión de las Artes</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+<div class="noise"></div>
+<div class="container">
+
+  <header>
+    <div class="badge">Gestión de las Artes</div>
+    <h1>App Envío<br><span>Masivo</span></h1>
+    <p class="subtitle">// Subsecretaría de Artes · Secretaría de Cultura de Cali</p>
+  </header>
+
+  <!-- FORMULARIO -->
+  <div id="form-section">
+    <div class="card">
+      <div class="card-title">01 · Autenticación</div>
+
+      <div class="warn-box" id="token-warn">
+        ⚠ Token permanente activo — vence en <span id="dias-restantes" style="font-weight:bold;"></span> días
+      </div>
+
+      <div style="margin-top:0.75rem;">
+        <span onclick="toggleTokenAvanzado()" style="font-family:var(--mono);font-size:0.75rem;color:var(--text2);cursor:pointer;" id="toggle-label">▶ Usar token diferente</span>
+      </div>
+      <div id="token-avanzado" style="display:none;margin-top:1rem;">
+        <div class="field">
+          <label>Token de acceso</label>
+          <input type="password" id="token" placeholder="Dejar vacío para usar token permanente" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">02 · Plantilla y CSV</div>
+
+      <div class="field">
+        <label>Plantilla</label>
+        <select id="plantilla">
+          <option value="semilleros">Semilleros Artísticos — mesnajes_de_asistencia (es_CO)</option>
+          <option value="orquestas">Orquestas en Ruta — mensajes_asistencia_orquestas_en_ruta (en)</option>
+          <option value="mensajes_gda">Mensajes Masivos -GdA(es_CO)</option>
+          <option value="artes_al_aula">Artes al Aula — Formularios (es_CO)</option>
+          <option value="yawa_agenda_nueva">YAWA Agenda Nueva — yawa_agenda_nueva (es_CO)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Archivo CSV (columnas: numero, nombre)</label>
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="csv-file" accept=".csv">
+          <div class="drop-icon">📋</div>
+          <div class="drop-text">Arrastra tu CSV aquí o <strong>haz clic</strong></div>
+          <div class="file-name" id="file-name"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">03 · Configuración de envío</div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Pausa entre mensajes (seg)</label>
+          <input type="text" id="pausa_msg" value="3">
+        </div>
+        <div class="field">
+          <label>Tamaño de tanda</label>
+          <input type="text" id="tam_tanda" value="15">
+        </div>
+        <div class="field">
+          <label>Pausa entre tandas (seg)</label>
+          <input type="text" id="pausa_tanda" value="240">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-enviar" onclick="iniciarEnvio()">
+      <span>▶</span> Iniciar Envío
+    </button>
+  </div>
+
+  <!-- PROGRESO -->
+  <div id="progreso-section">
+    <div class="card">
+      <div class="prog-header">
+        <div class="card-title" style="margin:0">Estado del envío</div>
+        <span class="estado-badge estado-iniciando pulse" id="estado-badge">Iniciando</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text2);margin-bottom:1rem;">
+        Plantilla: <span id="plantilla-activa-label" style="color:var(--accent);">—</span>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-val total" id="stat-total">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val ok" id="stat-ok">0</div>
+          <div class="stat-label">Enviados</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val fail" id="stat-fail">0</div>
+          <div class="stat-label">Fallidos</div>
+        </div>
+      </div>
+
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" id="prog-bar"></div>
+      </div>
+      <div class="prog-nums" id="prog-nums">0 / 0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Log en tiempo real</div>
+      <div class="log-wrap" id="log-wrap"></div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:1rem">
+      <button class="btn btn-danger" id="btn-cancelar" onclick="cancelarEnvio()">✕ Cancelar envío</button>
+      <button class="btn btn-primary" id="btn-nuevo" style="display:none" onclick="nuevoEnvio()">+ Nuevo envío</button>
+    </div>
+  </div>
+
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
