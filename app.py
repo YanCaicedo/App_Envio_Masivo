@@ -23,9 +23,7 @@ TEMPLATES = {
     "orquestas":  {"name": "mensajes_asistencia_orquestas_en_ruta", "language": "en"},
     "mensajes_gda": {"name": "mensajes_gda", "language": "es_CO"},
     "artes_al_aula": {"name": "artes_al_aula", "language": "es_CO"},
-    "yawa_agenda_nueva": {
-    "name": "yawa_agenda_nueva",
-    "language": "es_CO",
+    "yawa_agenda_nueva": {"name": "yawa_agenda_nueva","language": "es_CO",
     "header_image": "https://raw.githubusercontent.com/YanCaicedo/App_Envio_Masivo/6d2ada826e0204fc3d5981b18c9223d3561d5912/Imagenes/Agenda_Yawa_Junio.jpg"
 },
 }
